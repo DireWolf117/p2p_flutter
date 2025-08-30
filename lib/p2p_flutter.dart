@@ -1,4 +1,3 @@
-
 import 'p2p_flutter_platform_interface.dart';
 
 class P2pFlutter {

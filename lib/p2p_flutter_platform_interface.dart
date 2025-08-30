@@ -1,6 +1,8 @@
+import 'package:p2p_flutter/datastructs/p2p_device.dart';
+import 'package:p2p_flutter/p2p_flutter_android.dart';
+import 'package:p2p_flutter/p2p_flutter_ios.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import 'p2p_flutter_method_channel.dart';
+import 'dart:io';
 
 abstract class P2pFlutterPlatform extends PlatformInterface {
   /// Constructs a P2pFlutterPlatform.
@@ -8,7 +10,17 @@ abstract class P2pFlutterPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static P2pFlutterPlatform _instance = MethodChannelP2pFlutter();
+  static P2pFlutterPlatform _instance = _createInstance();
+
+  static P2pFlutterPlatform _createInstance() {
+    if (Platform.isIOS) {
+      return P2pFlutterIOS();
+    } else if (Platform.isAndroid) {
+      return P2pFlutterAndroid();
+    } else {
+      throw UnsupportedError("This device is not supported");
+    }
+  }
 
   /// The default instance of [P2pFlutterPlatform] to use.
   ///
@@ -24,6 +36,12 @@ abstract class P2pFlutterPlatform extends PlatformInterface {
   }
 
   Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+    return _instance.getPlatformVersion();
   }
+
+  Stream<bool> get systemState;
+  Stream<P2pDevice> get deviceList;
+
+  bool connect(String deviceId);
+  bool disconnect(String deviceId);
 }
